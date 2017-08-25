@@ -1,0 +1,24 @@
+{
+  "name": "nodejs-hapi-hal",
+  "version": "0.0.1",
+  "description": "Just a playground for hapi and HAL format",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bfoerster/nodejs-hapi-hal.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bfoerster/nodejs-hapi-hal/issues"
+  },
+  "dependencies": {
+    "halacious": "^5.0.0",
+    "hapi": "^16.5.2",
+    "hapi-swagger": "^7.7.0",
+    "inert": "^4.2.1",
+    "joi": "^10.6.0",
+    "vision": "^4.1.1"
+  }
+}
