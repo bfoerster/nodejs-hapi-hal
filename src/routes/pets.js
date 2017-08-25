@@ -1,4 +1,5 @@
 const Joi = require('joi');
+const _ = require('underscore');
 
 module.exports = [{
     method: 'GET',
@@ -6,11 +7,23 @@ module.exports = [{
 
     config: {
         handler: (request, reply) => {
-            return reply('{ pets: [foo, bar] }');
+            const allPets = _.range(0, 10, 1).map((id) => createPet(id, 'Bodo', 'Dackel'));
+            return reply({pets: allPets});
         },
         description: 'Get All Pets',
         notes: 'Returns a list including all pets available',
-        tags: ['api']
+        tags: ['api'],
+        plugins: {
+            hal: {
+                embedded: {
+                    'pets': {
+                        path: 'pets',
+                        href: './{item.id}',
+                        ignore: 'id'
+                    }
+                }
+            }
+        }
     }
 },
     {
@@ -19,7 +32,8 @@ module.exports = [{
 
         config: {
             handler: (request, reply) => {
-                return reply(`{id: ${request.params.id}, foo: bar}`);
+                const id = request.params.id;
+                return reply(createPet(id, 'Bodo', 'Dackel'));
             },
             description: 'Get A Pet By Id',
             notes: 'Returns a single pet',
@@ -30,6 +44,21 @@ module.exports = [{
                         .required()
                         .description('The pets id'),
                 }
+            },
+            plugins: {
+                hal: {
+                    ignore: 'id'
+                }
             }
         }
     }];
+
+
+function createPet(id, name, category) {
+    const pet = {
+        id: id,
+        name: name,
+        category: category
+    };
+    return pet;
+}

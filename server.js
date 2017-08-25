@@ -3,6 +3,7 @@ const Hapi = require('hapi');
 const Inert = require('inert');
 const Vision = require('vision');
 const HapiSwagger = require('hapi-swagger');
+const Halacious = require('halacious');
 
 const PetRoute = require('./src/routes/pets');
 
@@ -25,7 +26,8 @@ server.register([
     {
         'register': HapiSwagger,
         'options': options
-    }],
+    },
+    Halacious],
     (err) => {
     server.start((err) => {
         if (err) {
