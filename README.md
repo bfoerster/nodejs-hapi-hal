@@ -1,1 +1,1 @@
-This is just a playground for node.js and hapi
+This is just a playground for Hapi and Hal using [Halacious](https://github.com/bleupen/halacious)
