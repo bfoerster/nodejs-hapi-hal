@@ -1,31 +1,33 @@
 const Joi = require('joi');
 const _ = require('underscore');
 
-module.exports = [{
-    method: 'GET',
-    path: '/pets',
+const allPets = [];
 
-    config: {
-        handler: (request, reply) => {
-            const allPets = _.range(0, 10, 1).map((id) => createPet(id, 'Bodo', 'Dackel'));
-            return reply({pets: allPets});
-        },
-        description: 'Get All Pets',
-        notes: 'Returns a list including all pets available',
-        tags: ['api'],
-        plugins: {
-            hal: {
-                embedded: {
-                    'pets': {
-                        path: 'pets',
-                        href: './{item.id}',
-                        ignore: 'id'
+module.exports = [
+    {
+        method: 'GET',
+        path: '/pets',
+
+        config: {
+            handler: (request, reply) => {
+                return reply({pets: allPets});
+            },
+            description: 'Get All Pets',
+            notes: 'Returns a list including all pets available',
+            tags: ['api'],
+            plugins: {
+                hal: {
+                    embedded: {
+                        'pets': {
+                            path: 'pets',
+                            href: './{item.id}',
+                            ignore: 'id'
+                        }
                     }
                 }
             }
         }
-    }
-},
+    },
     {
         method: 'GET',
         path: '/pets/{id}',
@@ -51,8 +53,37 @@ module.exports = [{
                 }
             }
         }
-    }];
+    },
+    {
+        method: 'POST',
+        path: '/pets',
 
+        config: {
+            handler: (request, reply) => {
+                const body = request.payload;
+                body.id = randomId();
+                allPets.push(body);
+                return reply(body);
+            },
+            description: 'POST a new Pet',
+            notes: 'Creates a new pet',
+            tags: ['api'],
+            plugins: {
+                hal: {
+                    ignore: 'id',
+                    prepare: (rep, done) => {
+                        rep._links.self.href = '/pets/' + rep.entity.id;
+                        done();
+                    }
+                }
+            }
+        }
+    }
+];
+
+function randomId() {
+    return Math.floor(Math.random() * 1000);
+}
 
 function createPet(id, name, category) {
     const pet = {
