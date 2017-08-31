@@ -16,7 +16,7 @@
   "dependencies": {
     "halacious": "^5.0.0",
     "hapi": "^16.5.2",
-    "hapi-swagger": "^7.7.0",
+    "hapi-swagger": "^7.7.1",
     "inert": "^4.2.1",
     "joi": "^10.6.0",
     "underscore": "^1.8.3",

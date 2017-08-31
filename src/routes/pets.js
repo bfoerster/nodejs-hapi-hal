@@ -44,7 +44,7 @@ module.exports = [
                 params: {
                     id: Joi.string()
                         .required()
-                        .description('The pets id'),
+                        .description('The pets id')
                 }
             },
             plugins: {
@@ -68,6 +68,16 @@ module.exports = [
             description: 'POST a new Pet',
             notes: 'Creates a new pet',
             tags: ['api'],
+            validate: {
+                payload: {
+                    name: Joi.string()
+                        .required()
+                        .description('The name of the pet'),
+                    category: Joi.string()
+                        .optional()
+                        .description('The pets category ')
+                }
+            },
             plugins: {
                 hal: {
                     ignore: 'id',
