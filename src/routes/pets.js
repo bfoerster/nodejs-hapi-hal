@@ -88,7 +88,7 @@ module.exports = [
                 hal: {
                     ignore: ['_id', '__v'],
                     prepare: (response, done) => {
-                        response._links.self.href = '/pets/' + response.entity.id;
+                        response._links.self.href = '/api/pets/' + response.entity.id;
                         done();
                     }
                 }
