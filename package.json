@@ -19,6 +19,7 @@
     "hapi-swagger": "^7.7.1",
     "inert": "^4.2.1",
     "joi": "^10.6.0",
+    "mongoose": "^4.11.9",
     "underscore": "^1.8.3",
     "vision": "^4.1.1"
   }

@@ -4,8 +4,16 @@ const Inert = require('inert');
 const Vision = require('vision');
 const HapiSwagger = require('hapi-swagger');
 const Halacious = require('halacious');
-
+const mongoose = require('mongoose');
 const PetRoute = require('./src/routes/pets');
+const OrdersRoute = require('./src/routes/orders');
+
+mongoose.Promise = global.Promise;
+const dbURI = process.env.DB_URI || 'mongodb://localhost:27017/my_petstore';
+
+mongoose.connect(dbURI, {useMongoClient: true})
+    .then(() => console.log("Database connection established"))
+    .catch(console.log);
 
 const server = new Hapi.Server();
 server.connection({
@@ -39,3 +47,4 @@ server.register([
     });
 
 server.route(PetRoute);
+server.route(OrdersRoute);

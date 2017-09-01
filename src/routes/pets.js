@@ -1,15 +1,15 @@
 const Joi = require('joi');
-const _ = require('underscore');
-
-const allPets = [];
+const Pet = require('../models/pet');
 
 module.exports = [
     {
         method: 'GET',
-        path: '/pets',
+        path: '/api/pets',
 
         config: {
-            handler: (request, reply) => {
+            handler: async (request, reply) => {
+                console.log('GET /pets');
+                const allPets = await Pet.find();
                 return reply({pets: allPets});
             },
             description: 'Get All Pets',
@@ -21,7 +21,7 @@ module.exports = [
                         'pets': {
                             path: 'pets',
                             href: './{item.id}',
-                            ignore: 'id'
+                            ignore: ['_id', '__v']
                         }
                     }
                 }
@@ -30,12 +30,15 @@ module.exports = [
     },
     {
         method: 'GET',
-        path: '/pets/{id}',
+        path: '/api/pets/{id}',
 
         config: {
-            handler: (request, reply) => {
+            handler: async (request, reply) => {
+                console.log('GET /pets/{id}');
                 const id = request.params.id;
-                return reply(createPet(id, 'Bodo', 'Dackel'));
+
+                const pet = await Pet.findById(id);
+                return reply(pet);
             },
             description: 'Get A Pet By Id',
             notes: 'Returns a single pet',
@@ -49,21 +52,24 @@ module.exports = [
             },
             plugins: {
                 hal: {
-                    ignore: 'id'
+                    ignore: ['_id', '__v']
                 }
             }
         }
     },
     {
         method: 'POST',
-        path: '/pets',
+        path: '/api/pets',
 
         config: {
-            handler: (request, reply) => {
+            handler: async (request, reply) => {
+                console.log('POST /pets');
                 const body = request.payload;
-                body.id = randomId();
-                allPets.push(body);
-                return reply(body);
+
+                const toSave = new Pet(body);
+                const pet = await toSave.save();
+
+                return reply(pet);
             },
             description: 'POST a new Pet',
             notes: 'Creates a new pet',
@@ -80,9 +86,9 @@ module.exports = [
             },
             plugins: {
                 hal: {
-                    ignore: 'id',
-                    prepare: (rep, done) => {
-                        rep._links.self.href = '/pets/' + rep.entity.id;
+                    ignore: ['_id', '__v'],
+                    prepare: (response, done) => {
+                        response._links.self.href = '/pets/' + response.entity.id;
                         done();
                     }
                 }
