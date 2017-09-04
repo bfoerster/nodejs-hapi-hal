@@ -1,3 +1,4 @@
+const Joi = require('joi');
 const Order = require('../models/order');
 const _ = require('underscore');
 
@@ -11,6 +12,9 @@ module.exports = [
                 const allOrders = await Order.find().populate('pets');
                 return reply({orders: allOrders});
             },
+            description: 'Get All Orders',
+            notes: 'Returns a list including all orders available',
+            tags: ['api'],
             plugins: {
                 hal: {
                     embedded: {
@@ -47,6 +51,16 @@ module.exports = [
                 const order = await Order.findById(id).populate('pets');
                 return reply(order);
             },
+            description: 'Get A Order By Id',
+            notes: 'Returns a single order',
+            tags: ['api'],
+            validate: {
+                params: {
+                    id: Joi.string()
+                        .required()
+                        .description('The order id')
+                }
+            },
             plugins: {
                 hal: {
                     ignore: ['_id', '__v'],
@@ -76,6 +90,16 @@ module.exports = [
 
                 const order = await Order.findById(id).populate({path: 'pets'});
                 return reply({pets: order.pets});
+            },
+            description: 'Get All Pets Of Orders',
+            notes: 'Returns a list including all pets assigned to a order',
+            tags: ['api'],
+            validate: {
+                params: {
+                    id: Joi.string()
+                        .required()
+                        .description('The order id')
+                }
             },
             plugins: {
                 hal: {
@@ -112,6 +136,19 @@ module.exports = [
                 order = await Order.findById(order).populate('pets');
 
                 return reply(order);
+            },
+            description: 'POST a new Order',
+            notes: 'Creates a new order',
+            tags: ['api'],
+            validate: {
+                payload: {
+                    orderReference: Joi.string()
+                        .required()
+                        .description('The reference of this order'),
+                    pets: Joi.array()
+                        .required()
+                        .description('The links of all pets assigned to this order')
+                }
             },
             plugins: {
                 hal: {

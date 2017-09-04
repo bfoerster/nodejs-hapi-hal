@@ -25,7 +25,8 @@ const options = {
     info: {
         'title': 'Pet API Documentation',
         'version': "1",
-    }
+    },
+    produces: ['application/hal+json']
 };
 
 server.register([
