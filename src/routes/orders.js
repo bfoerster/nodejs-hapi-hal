@@ -8,7 +8,6 @@ module.exports = [
         path: '/api/orders',
         config: {
             handler: async (request, reply) => {
-                console.log('GET orders');
                 const allOrders = await Order.find().populate('pets');
                 return reply({orders: allOrders});
             },
@@ -85,7 +84,6 @@ module.exports = [
         path: '/api/orders/{id}/pets',
         config: {
             handler: async (request, reply) => {
-                console.log('GET /orders/{id}/pets');
                 const id = request.params.id;
 
                 const order = await Order.findById(id).populate({path: 'pets'});

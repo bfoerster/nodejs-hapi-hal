@@ -8,7 +8,6 @@ module.exports = [
 
         config: {
             handler: async (request, reply) => {
-                console.log('GET /pets');
                 const allPets = await Pet.find();
                 return reply({pets: allPets});
             },
@@ -63,7 +62,6 @@ module.exports = [
 
         config: {
             handler: async (request, reply) => {
-                console.log('POST /pets');
                 const body = request.payload;
 
                 const toSave = new Pet(body);
