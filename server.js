@@ -1,4 +1,5 @@
 'use strict';
+const Joi = require('joi');
 const Hapi = require('hapi');
 const Inert = require('inert');
 const Vision = require('vision');
@@ -18,7 +19,14 @@ mongoose.connect(dbURI, {useMongoClient: true})
 const server = new Hapi.Server();
 server.connection({
     host: 'localhost',
-    port: 8000
+    port: 8000,
+    routes: {
+        validate: {
+            headers: Joi.object({
+                'accept': Joi.string().invalid('application/json').optional()
+            }).options({allowUnknown: true})
+        }
+    }
 });
 
 const options = {
