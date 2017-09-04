@@ -1,4 +1,5 @@
 const Order = require('../models/order');
+const _ = require('underscore');
 
 module.exports = [
     {
@@ -7,10 +8,9 @@ module.exports = [
         config: {
             handler: async (request, reply) => {
                 console.log('GET orders');
-                const allOrders = await Order.find();
+                const allOrders = await Order.find().populate('pets');
                 return reply({orders: allOrders});
             },
-            // TODO add link to pets...
             plugins: {
                 hal: {
                     embedded: {
@@ -18,10 +18,15 @@ module.exports = [
                             path: 'orders',
                             href: './{item.id}',
                             ignore: ['_id', '__v'],
+                            links: {
+                                pets: {
+                                    href: '/api/orders/{id}/pets'
+                                }
+                            },
                             embedded: {
                                 'pets': {
                                     path: 'pets',
-                                    href: './{item.id}',
+                                    href: '/api/pets/{item.id}',
                                     ignore: ['_id', '__v']
                                 }
                             }
@@ -39,17 +44,46 @@ module.exports = [
                 console.log('GET /orders/{id}');
                 const id = request.params.id;
 
-                const order = await Order.findById(id);
+                const order = await Order.findById(id).populate('pets');
                 return reply(order);
             },
             plugins: {
                 hal: {
                     ignore: ['_id', '__v'],
-                    // TODO add link to pets...
+                    links: {
+                        pets: {
+                            href: '/api/orders/{id}/pets'
+                        }
+                    },
                     embedded: {
                         'pets': {
                             path: 'pets',
-                            href: './{item.id}',
+                            href: '/api/pets/{item.id}',
+                            ignore: ['_id', '__v']
+                        }
+                    }
+                }
+            }
+        }
+    },
+    {
+        method: 'GET',
+        path: '/api/orders/{id}/pets',
+        config: {
+            handler: async (request, reply) => {
+                console.log('GET /orders/{id}/pets');
+                const id = request.params.id;
+
+                const order = await Order.findById(id).populate({path: 'pets'});
+                return reply({pets: order.pets});
+            },
+            plugins: {
+                hal: {
+                    ignore: ['_id', '__v'],
+                    embedded: {
+                        'pets': {
+                            path: 'pets',
+                            href: '/api/pets/{item.id}',
                             ignore: ['_id', '__v']
                         }
                     }
@@ -65,8 +99,17 @@ module.exports = [
                 console.log('POST orders');
                 const body = request.payload;
 
+                const petObjectIdPromises = _.map(body.pets, async petURL => {
+                    const id = petURL.substring(petURL.lastIndexOf('/') + 1);
+                    return id;
+                });
+
+                const petObjectIds = await Promise.all(petObjectIdPromises);
+                body.pets = petObjectIds;
+
                 const toSave = new Order(body);
-                const order = await toSave.save();
+                let order = await toSave.save();
+                order = await Order.findById(order).populate('pets');
 
                 return reply(order);
             },
@@ -77,10 +120,15 @@ module.exports = [
                         response._links.self.href = '/api/orders/' + response.entity.id;
                         done();
                     },
+                    links: {
+                        pets: {
+                            href: '/api/orders/{id}/pets'
+                        }
+                    },
                     embedded: {
-                        'orders': {
-                            path: 'orders',
-                            href: './{item.id}',
+                        'pets': {
+                            path: 'pets',
+                            href: '/api/pets/{item.id}',
                             ignore: ['_id', '__v']
                         }
                     }

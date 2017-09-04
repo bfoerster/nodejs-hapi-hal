@@ -96,16 +96,3 @@ module.exports = [
         }
     }
 ];
-
-function randomId() {
-    return Math.floor(Math.random() * 1000);
-}
-
-function createPet(id, name, category) {
-    const pet = {
-        id: id,
-        name: name,
-        category: category
-    };
-    return pet;
-}

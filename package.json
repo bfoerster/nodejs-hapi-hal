@@ -4,7 +4,7 @@
   "description": "Just a playground for hapi and HAL format",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node $NODE_DEBUG_OPTION server.js"
   },
   "repository": {
     "type": "git",
